@@ -251,15 +251,15 @@ docs/migration/ (strip-down and separation plans) ✓
 ---
 
 ### ✅ Step 5: Update Namespaces
-**Status:** Pending  
+**Status:** Completed  
 **Estimated Time:** 1-2 hours
 
 **Tasks:**
-- [ ] Update all utility class namespaces from `Dranzd\Common\EventSourcing\Util` to `Dranzd\Common\Utils`
-- [ ] Update all test class namespaces
-- [ ] Update any cross-references between utility classes
-- [ ] Run composer dump-autoload
-- [ ] Verify all tests still pass
+- [x] Update all utility class namespaces from `Dranzd\Common\EventSourcing\Util` to `Dranzd\Common\Utils` ✓
+- [x] Update cross-references between utility classes ✓
+- [x] Run composer dump-autoload ✓
+- [x] Verify no old namespace references remain ✓
+- [x] Move files from `src/Util/` to `src/` ✓
 
 **Files to Update:**
 ```
@@ -290,21 +290,26 @@ namespace Dranzd\Common\Utils;
 ---
 
 ### ✅ Step 6: Create New Documentation
-**Status:** Pending  
+**Status:** Completed  
 **Estimated Time:** 2-3 hours
 
 **Tasks:**
-- [ ] Create new README.md for utilities library
-  - Installation instructions
-  - Feature overview
-  - Usage examples for each utility
-  - API reference
-  - Requirements (PHP 8.3+)
-- [ ] Remove event-sourcing specific documentation
-- [ ] Keep only migration documentation
-- [ ] Create CHANGELOG.md
-- [ ] Create CONTRIBUTING.md
-- [ ] Add usage examples for each utility class
+- [x] Create README.md for `dranzd/common-utils` ✓
+  - Installation instructions ✓
+  - Feature overview ✓
+  - Usage examples for each utility ✓
+  - API reference ✓
+  - Requirements (PHP 8.3+) ✓
+  - Use cases and examples ✓
+  - Contributing guidelines ✓
+- [x] Remove event-sourcing specific documentation ✓
+- [x] Keep only migration documentation ✓
+- [x] Create CHANGELOG.md ✓
+- [x] Create CONTRIBUTING.md ✓
+- [x] Create detailed API documentation ✓
+  - ArrayUtil API reference ✓
+  - StringUtil API reference ✓
+  - Idx API reference ✓
 
 **Documentation Structure:**
 ```
