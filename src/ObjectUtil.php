@@ -1,7 +1,17 @@
 <?php
 
-namespace Dranzd\Common\EventSourcing\Util;
+declare(strict_types=1);
 
+namespace Dranzd\Common\Utils;
+
+use ReflectionClass;
+use ReflectionProperty;
+
+/**
+ * Object utility functions for reflection and manipulation.
+ * 
+ * Provides framework-agnostic object manipulation utilities using native PHP.
+ */
 final class ObjectUtil
 {
     private static $instance;
@@ -38,7 +48,7 @@ final class ObjectUtil
      * @param  ReflectionClass|null $relfection
      * @return mixed
      */
-    public function valueOfProperty($object, $property, $reflection = null)
+    public function valueOfProperty(object $object, string $property, ?ReflectionClass $reflection = null): mixed
     {
         if (null === $reflection) {
             $reflection = new \ReflectionClass(\get_class($object));
@@ -66,7 +76,7 @@ final class ObjectUtil
      * @param  ReflectionClass|null $relfection
      * @return null
      */
-    public function setPropertyValue($object, $property, $value, $reflection = null)
+    public function setPropertyValue(object $object, string $property, mixed $value, ?ReflectionClass $reflection = null): void
     {
         if (null === $reflection) {
             $reflection = new \ReflectionClass(\get_class($object));
@@ -103,7 +113,7 @@ final class ObjectUtil
      * @param  ReflectionClass|null $reflection
      * @return Object|null
      */
-    public function newInstanceWithoutConstructor($className, $reflection = null)
+    public function newInstanceWithoutConstructor(string $className, ?ReflectionClass $reflection = null): ?object
     {
         if (!class_exists($className)) {
             return null;

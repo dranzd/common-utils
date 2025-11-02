@@ -1,8 +1,15 @@
 <?php
 
-namespace Dranzd\Common\EventSourcing\Util;
+declare(strict_types=1);
 
-class MoneyUtil
+namespace Dranzd\Common\Utils;
+
+/**
+ * Money utility functions for currency conversion.
+ * 
+ * Provides framework-agnostic money manipulation utilities using native PHP.
+ */
+final class MoneyUtil
 {
     /**
      * Convert a float money value to integer with lowest denomination
@@ -13,9 +20,9 @@ class MoneyUtil
      * @param  integer $lowestDenomination Lowest denomination of money
      * @return integer                     Value in the lowest denomination
      */
-    public static function fromFloatToLowestDenomination($floatValue, $lowestDenomination = 100)
+    public static function fromFloatToLowestDenomination(float $floatValue, int $lowestDenomination = 100): int
     {
-        return (integer) (number_format($floatValue * $lowestDenomination, log10($lowestDenomination), '.', ''));
+        return (int) round($floatValue * $lowestDenomination);
     }
 
     /**
@@ -25,7 +32,7 @@ class MoneyUtil
      * @param  integer $lowestDenomination Lowest denomination of money
      * @return float                       Value in the float value
      */
-    public static function fromLowestDenominationToFloat($integerValue, $lowestDenomination = 100)
+    public static function fromLowestDenominationToFloat(int $integerValue, int $lowestDenomination = 100): float
     {
         return (float) ($integerValue / $lowestDenomination);
     }

@@ -84,18 +84,23 @@ All event-sourcing specific components:
 ---
 
 ### ✅ Step 2: Remove Framework Dependencies
-**Status:** Pending  
+**Status:** Completed  
 **Estimated Time:** 2-3 hours
 
 **Tasks:**
-- [ ] Replace `Illuminate\Support\Str` with native PHP implementations
-  - `Str::snake()` → Custom implementation
-  - `Str::camel()` → Custom implementation
-  - `Str::kebab()` → Custom implementation
-- [ ] Replace `Laminas\Stdlib\ArrayUtils::merge()` with native PHP implementation
-- [ ] Remove all framework dependencies from composer.json
-- [ ] Update all utility classes to use only native PHP functions
-- [ ] Ensure PHP 8.3 compatibility
+- [x] Replace `Illuminate\Support\Str` with native PHP implementations
+  - `Str::snake()` → Custom implementation ✓
+  - `Str::camel()` → Custom implementation ✓
+  - `Str::kebab()` → Custom implementation ✓
+- [x] Replace `Laminas\Stdlib\ArrayUtils::merge()` with native PHP implementation ✓
+- [x] Remove all framework dependencies from composer.json ✓
+- [x] Update all utility classes to use only native PHP functions ✓
+- [x] Ensure PHP 8.3 compatibility ✓
+- [x] Add `declare(strict_types=1)` to all utility files ✓
+- [x] Update namespace from `Dranzd\Common\EventSourcing\Util` to `Dranzd\Common\Utils` ✓
+- [x] Add comprehensive PHPDoc documentation ✓
+- [x] Improve type hints (PHP 8.3 mixed, nullable types) ✓
+- [x] Move utility files from `src/Util/` to `src/` ✓
 
 **Files to Update:**
 ```

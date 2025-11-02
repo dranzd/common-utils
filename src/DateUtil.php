@@ -1,10 +1,23 @@
 <?php
 
-namespace Dranzd\Common\EventSourcing\Util;
+declare(strict_types=1);
 
+namespace Dranzd\Common\Utils;
+
+/**
+ * Date utility functions for validation.
+ * 
+ * Provides framework-agnostic date manipulation utilities using native PHP.
+ */
 final class DateUtil
 {
-    final public static function isDateValid(string $date): bool
+    /**
+     * Check if a date string is valid.
+     *
+     * @param string $date The date string to validate
+     * @return bool True if the date is valid, false otherwise
+     */
+    public static function isDateValid(string $date): bool
     {
         static $phpVersion = null;
         if (is_null($phpVersion)) {

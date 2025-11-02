@@ -1,6 +1,8 @@
 <?php
 
-namespace Dranzd\Common\EventSourcing\Util;
+declare(strict_types=1);
+
+namespace Dranzd\Common\Utils;
 
 final class Idx
 {
@@ -18,7 +20,7 @@ final class Idx
      * @return mixed
      */
 
-    final public static function get($object, $key, $default = null, $useDefaultOnEmpty = false)
+    public static function get(mixed $object, mixed $key, mixed $default = null, bool $useDefaultOnEmpty = false): mixed
     {
         if (is_array($key)) {
             $idx = $object;
