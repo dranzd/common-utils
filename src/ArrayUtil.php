@@ -14,7 +14,7 @@ final class ArrayUtil
     /**
      * Convert all array keys to snake_case.
      *
-     * @param array $array The input array
+     * @param array<string, mixed> $array The input array
      * @param bool $recursive Whether to recursively convert nested arrays
      * @return array The array with snake_case keys
      */
@@ -46,7 +46,7 @@ final class ArrayUtil
     /**
      * Convert all array keys to camelCase.
      *
-     * @param array $array The input array
+     * @param array<string, mixed> $array The input array
      * @param bool $recursive Whether to recursively convert nested arrays
      * @return array The array with camelCase keys
      */
@@ -78,7 +78,7 @@ final class ArrayUtil
     /**
      * Convert all array keys to kebab-case.
      *
-     * @param array $array The input array
+     * @param array<string, mixed> $array The input array
      * @param bool $recursive Whether to recursively convert nested arrays
      * @return array The array with kebab-case keys
      */

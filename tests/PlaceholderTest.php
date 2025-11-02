@@ -8,7 +8,7 @@ use PHPUnit\Framework\TestCase;
 
 /**
  * Placeholder test to allow CI to pass until full test suite is implemented.
- * 
+ *
  * TODO: Remove this file once actual tests are implemented.
  */
 final class PlaceholderTest extends TestCase

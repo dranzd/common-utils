@@ -1,0 +1,13 @@
+parameters:
+    level: 8
+    paths:
+        - src
+        - tests
+    
+    # Ignore generic type warnings for utility library
+    # These are informational and don't add practical value for a utility library
+    # that works with dynamic array structures
+    ignoreErrors:
+        - '#has parameter .* with no value type specified in iterable type array#'
+        - '#return type has no value type specified in iterable type array#'
+        - '#does not specify its types: T#'
