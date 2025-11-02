@@ -9,12 +9,12 @@ use ReflectionProperty;
 
 /**
  * Object utility functions for reflection and manipulation.
- * 
+ *
  * Provides framework-agnostic object manipulation utilities using native PHP.
  */
 final class ObjectUtil
 {
-    private static $instance;
+    private static ?self $instance = null;
 
     private function __construct()
     {
@@ -25,7 +25,7 @@ final class ObjectUtil
      * @static
      * @return self
      */
-    public static function instance()
+    public static function instance(): self
     {
         if (null === static::$instance) {
             static::$instance = new static();
@@ -36,8 +36,9 @@ final class ObjectUtil
 
     /**
      * @see self::valueOfProperty
+     * @return mixed
      */
-    public function getPropertyValue()
+    public function getPropertyValue(): mixed
     {
         return \call_user_func_array([$this, 'valueOfProperty'], \func_get_args());
     }
@@ -45,7 +46,7 @@ final class ObjectUtil
     /**
      * @param  object               $object
      * @param  string               $property
-     * @param  ReflectionClass|null $relfection
+     * @param  ReflectionClass|null $reflection
      * @return mixed
      */
     public function valueOfProperty(object $object, string $property, ?ReflectionClass $reflection = null): mixed
@@ -73,8 +74,7 @@ final class ObjectUtil
      * @param  object               $object
      * @param  string               $property
      * @param  mixed                $value
-     * @param  ReflectionClass|null $relfection
-     * @return null
+     * @param  ReflectionClass|null $reflection
      */
     public function setPropertyValue(object $object, string $property, mixed $value, ?ReflectionClass $reflection = null): void
     {
@@ -86,25 +86,33 @@ final class ObjectUtil
  * @var \ReflectionClass $reflection
 */
 
+        $reflectionProperty = null;
         if ($reflection->hasProperty($property)) {
-            $property = $reflection->getProperty($property);
+            $reflectionProperty = $reflection->getProperty($property);
         } else {
-            $parentReflection = new \ReflectionClass(\get_parent_class($object));
-            if ($parentReflection->hasProperty($property)) {
-                $property = $parentReflection->getProperty($property);
+            $parentClass = \get_parent_class($object);
+            if ($parentClass !== false) {
+                $parentReflection = new \ReflectionClass($parentClass);
+                if ($parentReflection->hasProperty($property)) {
+                    $reflectionProperty = $parentReflection->getProperty($property);
+                }
             }
         }
 
-        $isAccessible = !$property->isPrivate() && !$property->isProtected();
-
-        if (!$isAccessible) {
-            $property->setAccessible(true);
+        if ($reflectionProperty === null) {
+            return;
         }
 
-        $property->setValue($object, $value);
+        $isAccessible = !$reflectionProperty->isPrivate() && !$reflectionProperty->isProtected();
 
         if (!$isAccessible) {
-            $property->setAccessible(false);
+            $reflectionProperty->setAccessible(true);
+        }
+
+        $reflectionProperty->setValue($object, $value);
+
+        if (!$isAccessible) {
+            $reflectionProperty->setAccessible(false);
         }
     }
 

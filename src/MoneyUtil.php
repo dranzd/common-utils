@@ -6,7 +6,7 @@ namespace Dranzd\Common\Utils;
 
 /**
  * Money utility functions for currency conversion.
- * 
+ *
  * Provides framework-agnostic money manipulation utilities using native PHP.
  */
 final class MoneyUtil

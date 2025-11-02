@@ -6,7 +6,7 @@ namespace Dranzd\Common\Utils;
 
 /**
  * Array utility functions for key manipulation and merging.
- * 
+ *
  * Provides framework-agnostic array manipulation utilities using native PHP.
  */
 final class ArrayUtil

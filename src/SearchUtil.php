@@ -6,7 +6,7 @@ namespace Dranzd\Common\Utils;
 
 /**
  * Search utility functions for SQL LIKE pattern generation.
- * 
+ *
  * Provides framework-agnostic search utilities using native PHP.
  */
 final class SearchUtil
@@ -52,6 +52,6 @@ final class SearchUtil
      */
     public static function toLoose(string $filter): string
     {
-        return preg_replace('/[^[:graph:]]+/i', '%', $filter);
+        return (string) preg_replace('/[^[:graph:]]+/i', '%', $filter);
     }
 }

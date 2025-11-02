@@ -1,5 +1,5 @@
 # Dockerfile
-FROM php:8.2-cli
+FROM php:8.3-cli
 
 # Install system dependencies and Composer
 RUN apt-get update && apt-get install -y \
@@ -16,9 +16,9 @@ WORKDIR /app
 # Copy project files
 COPY . .
 
-# Install dependencies
-RUN composer install --no-interaction --prefer-dist
+# Install/update dependencies
+RUN composer update --no-interaction --prefer-dist --optimize-autoloader
 
-# Default command (run tests)
-CMD ["./vendor/bin/phpunit", "--testdox"]
+# Default command (keep container running)
+CMD ["tail", "-f", "/dev/null"]
 

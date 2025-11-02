@@ -6,7 +6,7 @@ namespace Dranzd\Common\Utils;
 
 /**
  * Date utility functions for validation.
- * 
+ *
  * Provides framework-agnostic date manipulation utilities using native PHP.
  */
 final class DateUtil

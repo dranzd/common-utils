@@ -62,48 +62,48 @@ function display_help {
 # Proxy PHP commands to the container
 if [ "$1" == "php" ]; then
     shift 1
-    $COMPOSE exec php php "$@"
+    $COMPOSE exec -T php php "$@"
 
 # Proxy Composer commands to the container
 elif [ "$1" == "composer" ]; then
     shift 1
-    $COMPOSE exec php composer "$@"
+    $COMPOSE exec -T php composer "$@"
 
 # Composer shortcuts
 elif [ "$1" == "install" ]; then
-    $COMPOSE exec php composer install
+    $COMPOSE exec -T php composer install
 
 elif [ "$1" == "update" ]; then
-    $COMPOSE exec php composer update
+    $COMPOSE exec -T php composer update
 
 elif [ "$1" == "dump-autoload" ]; then
-    $COMPOSE exec php composer dump-autoload
+    $COMPOSE exec -T php composer dump-autoload
 
 # Testing commands
 elif [ "$1" == "test" ]; then
     shift 1
-    $COMPOSE exec php composer test "$@"
+    $COMPOSE exec -T php composer test "$@"
 
 elif [ "$1" == "phpstan" ]; then
-    $COMPOSE exec php composer phpstan
+    $COMPOSE exec -T php composer phpstan
 
 elif [ "$1" == "cs-check" ]; then
-    $COMPOSE exec php composer cs-check
+    $COMPOSE exec -T php composer cs-check
 
 elif [ "$1" == "cs-fix" ]; then
-    $COMPOSE exec php composer cs-fix
+    $COMPOSE exec -T php composer cs-fix
 
 elif [ "$1" == "quality" ]; then
     echo "${YELLOW}Running quality checks...${NC}"
     echo
     echo "${GREEN}1. Running tests...${NC}"
-    $COMPOSE exec php composer test
+    $COMPOSE exec -T php composer test
     echo
     echo "${GREEN}2. Running PHPStan...${NC}"
-    $COMPOSE exec php composer phpstan
+    $COMPOSE exec -T php composer phpstan
     echo
     echo "${GREEN}3. Checking code style...${NC}"
-    $COMPOSE exec php composer cs-check
+    $COMPOSE exec -T php composer cs-check
     echo
     echo "${GREEN}Quality checks complete!${NC}"
 
@@ -149,7 +149,7 @@ elif [ "$1" == "root-shell" ]; then
 # Execute arbitrary commands
 elif [ "$1" == "exec" ]; then
     shift 1
-    $COMPOSE exec php "$@"
+    $COMPOSE exec -T php "$@"
 
 # Display help
 else

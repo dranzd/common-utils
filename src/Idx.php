@@ -41,16 +41,16 @@ final class Idx
             } else {
                 $reflection = new \ReflectionProperty($object, $key);
                 if ($reflection->isPrivate() || $reflection->isProtected()) {
-                    $getter = 'get' . ucfirst($key);
+                    $getter = 'get' . ucfirst((string) $key);
                     if (method_exists($object, $getter)) {
-                        $result = call_user_func([$object, $getter]);
+                        $result = $object->$getter();
                         if (!$useDefaultOnEmpty || !empty($result)) {
                             return $result;
                         }
                     }
-                    $getter = $key;
+                    $getter = (string) $key;
                     if (method_exists($object, $getter)) {
-                        $result = call_user_func([$object, $getter]);
+                        $result = $object->$getter();
                         if (!$useDefaultOnEmpty || !empty($result)) {
                             return $result;
                         }
@@ -65,7 +65,7 @@ final class Idx
                     return $object->$key;
                 }
             }
-        } elseif (is_array($object) && (is_string($key) || is_numeric($key)) && array_key_exists($key, $object)) {
+        } elseif (is_array($object) && (is_string($key) || is_int($key)) && array_key_exists($key, $object)) {
             if (!$useDefaultOnEmpty || !empty($object[$key])) {
                 return $object[$key];
             }
