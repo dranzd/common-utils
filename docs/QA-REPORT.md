@@ -2,7 +2,8 @@
 
 **Date:** 2025-11-02  
 **Version:** 1.0.0 (Pre-release)  
-**PHP Version:** 8.3.27 (Docker), 8.1.2 (Host)  
+**PHP Version:** 8.3.27 (Docker), 8.1.2 (Host - not used)  
+**Required:** PHP 8.3+  
 **Status:** ✅ PASS (with minor warnings)
 
 ---
