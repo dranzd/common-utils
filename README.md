@@ -1,183 +1,251 @@
-# Common Event Sourcing
+# Common Utils
 
-A framework-agnostic event sourcing library that provides common abstractions and utilities for building event-sourced applications using Domain-Driven Design (DDD) principles and Onion Architecture.
+A collection of framework-agnostic utility functions for PHP 8.3+ applications. This library provides essential utilities for array manipulation, string conversion, safe property access, date handling, money calculations, object manipulation, and search operations.
 
 ## Features
 
-- **Event Sourcing Primitives**: Base classes and interfaces for event-sourced aggregates
-- **CQRS Support**: Command, Event, and Query message types with generic infrastructure
-- **Event Versioning**: Built-in support for event schema evolution with upcasters and VersionedEventTrait
-- **Aggregate Root Pattern**: AggregateRootTrait with automatic event replay and version management
-- **Flexible Metadata**: Trait-based causation, correlation, and actor tracking
-- **Metadata Injectors**: Utilities to transfer metadata from commands to events
-- **Named Constructor Pattern**: Expressive, domain-focused event creation
-- **DDD Building Blocks**: Domain events, aggregates, and value objects
-- **Framework Agnostic**: Clean separation of concerns with no framework dependencies
-- **Type Safety**: Full PHP 8.1+ type hints with static return types for fluent interfaces
-- **Comprehensive Tests**: 123 tests with 288 assertions ensuring reliability
+- **ArrayUtil**: Array key case conversion (snake_case, camelCase, kebab-case) and merging
+- **StringUtil**: String case conversion utilities
+- **Idx**: Safe array/object property access with default values
+- **DateUtil**: Date manipulation and formatting utilities
+- **MoneyUtil**: Money calculation and formatting utilities
+- **ObjectUtil**: Object manipulation and reflection utilities
+- **SearchUtil**: Search and filtering utilities
+- **Framework Agnostic**: Zero framework dependencies - pure PHP only
+- **PHP 8.3+**: Modern PHP with full type safety
+- **Lightweight**: Minimal dependencies (only ext-json)
+- **Well Tested**: Comprehensive test coverage
 
 ## Requirements
 
-- PHP 8.1 or higher
+- PHP 8.3 or higher
 - ext-json
-- ramsey/uuid ^4.7
-- webmozart/assert ^1.11
 
 ## Installation
 
 ```bash
-composer require dranzd/common-event-sourcing
+composer require dranzd/common-utils
 ```
 
-The required dependencies (`ramsey/uuid` and `webmozart/assert`) will be installed automatically.
+No additional dependencies required!
 
 ## Quick Start
 
-### 1. Create a Domain Event
+### ArrayUtil - Array Key Case Conversion
 
 ```php
-use Dranzd\Common\EventSourcing\Domain\EventSourcing\AbstractAggregateEvent;
-use Dranzd\Common\EventSourcing\Domain\EventSourcing\AggregateEventWithPrivateConstructorTrait;
+use Dranzd\Common\Utils\ArrayUtil;
 
-final class OrderPlaced extends AbstractAggregateEvent
-{
-    use AggregateEventWithPrivateConstructorTrait;
-    
-    const MESSAGE_NAME = 'order.order.placed';
-    
-    private OrderId $orderId;
-    private CustomerId $customerId;
-    private Money $totalAmount;
-    
-    // Named constructor - expressive and domain-focused
-    public static function withAmount(
-        OrderId $orderId,
-        CustomerId $customerId,
-        Money $totalAmount
-    ): self {
-        $instance = new self();
-        $instance->orderId = $orderId;
-        $instance->customerId = $customerId;
-        $instance->totalAmount = $totalAmount;
-        return $instance;
-    }
-    
-    public function getPayload(): array
-    {
-        return [
-            'order_id' => $this->orderId->toNative(),
-            'customer_id' => $this->customerId->toNative(),
-            'total_amount' => $this->totalAmount->toArray(),
-        ];
-    }
-    
-    protected function setPayload(array $payload): void
-    {
-        if (empty($payload)) {
-            return;
-        }
-        
-        $this->orderId = OrderId::fromNative($payload['order_id']);
-        $this->customerId = CustomerId::fromNative($payload['customer_id']);
-        $this->totalAmount = Money::fromArray($payload['total_amount']);
-    }
-}
+$data = [
+    'firstName' => 'John',
+    'lastName' => 'Doe',
+    'emailAddress' => 'john@example.com'
+];
+
+// Convert to snake_case
+$snakeCase = ArrayUtil::keyToSnakeCase($data);
+// Result: ['first_name' => 'John', 'last_name' => 'Doe', 'email_address' => 'john@example.com']
+
+// Convert to camelCase
+$camelCase = ArrayUtil::keyToCamelCase($data);
+// Result: ['firstName' => 'John', 'lastName' => 'Doe', 'emailAddress' => 'john@example.com']
+
+// Convert to kebab-case
+$kebabCase = ArrayUtil::keyToKebabCase($data);
+// Result: ['first-name' => 'John', 'last-name' => 'Doe', 'email-address' => 'john@example.com']
+
+// Recursive conversion
+$nested = [
+    'userInfo' => [
+        'firstName' => 'John',
+        'contactDetails' => [
+            'emailAddress' => 'john@example.com'
+        ]
+    ]
+];
+$result = ArrayUtil::keyToSnakeCase($nested, true);
+// Converts all nested keys recursively
 ```
 
-### 2. Create an Aggregate Root
-
-Implement the `AggregateRoot` interface using the `AggregateRootTrait`:
+### StringUtil - String Case Conversion
 
 ```php
-use Dranzd\Common\EventSourcing\Domain\EventSourcing\AggregateRoot;
-use Dranzd\Common\EventSourcing\Domain\EventSourcing\AggregateRootTrait;
+use Dranzd\Common\Utils\StringUtil;
 
-class Order implements AggregateRoot
-{
-    use AggregateRootTrait;
-    
-    private string $orderId;
-    private string $status;
-    
-    public function __construct(string $orderId)
-    {
-        $this->orderId = $orderId;
-    }
-    
-    public function getAggregateRootUuid(): string
-    {
-        return $this->orderId;
-    }
-    
-    public function placeOrder(CustomerId $customerId, Money $amount): void
-    {
-        $event = OrderPlaced::withAmount(
-            OrderId::fromNative($this->orderId),
-            $customerId,
-            $amount
-        );
-        
-        $this->recordThat($event);
-    }
-    
-    public function confirmOrder(): void
-    {
-        $event = OrderConfirmed::forOrder(OrderId::fromNative($this->orderId));
-        $this->recordThat($event);
-    }
-    
-    // Apply methods are called automatically by the trait
-    protected function applyOnOrderPlaced(OrderPlaced $event): void
-    {
-        $payload = $event->getPayload();
-        $this->orderId = $payload['order_id'];
-        $this->status = 'placed';
-    }
-    
-    protected function applyOnOrderConfirmed(OrderConfirmed $event): void
-    {
-        $this->status = 'confirmed';
-    }
-}
+// Convert to snake_case
+$snake = StringUtil::toSnakeCase('firstName');
+// Result: 'first_name'
+
+// Convert to camelCase
+$camel = StringUtil::toCamelCase('first_name');
+// Result: 'firstName'
+
+// Convert to kebab-case
+$kebab = StringUtil::toKebabCase('firstName');
+// Result: 'first-name'
 ```
 
-### Working with Events
+### Idx - Safe Property Access
 
 ```php
-// Create and record events
-$order = new Order('order-123');
-$order->placeOrder($customerId, $amount);
-$order->confirmOrder();
+use Dranzd\Common\Utils\Idx;
 
-// Retrieve recorded events
-$events = $order->getRecordedEvents();
+$data = [
+    'user' => [
+        'name' => 'John',
+        'email' => 'john@example.com'
+    ]
+];
 
-// Pop events (retrieve and clear)
-$events = $order->popRecordedEvents();
+// Safe access with default value
+$name = Idx::get($data, ['user', 'name'], 'Unknown');
+// Result: 'John'
 
-// Reconstitute from event history
-$order = Order::reconstituteFromHistory($events);
+$phone = Idx::get($data, ['user', 'phone'], 'N/A');
+// Result: 'N/A' (default value)
+
+// Works with objects too
+$user = new stdClass();
+$user->name = 'Jane';
+
+$name = Idx::get($user, 'name', 'Unknown');
+// Result: 'Jane'
+
+// Use default on empty values
+$empty = ['value' => ''];
+$result = Idx::get($empty, 'value', 'default', true);
+// Result: 'default' (because value is empty)
 ```
 
-## Architecture
+### DateUtil - Date Manipulation
 
-This library follows **Onion Architecture** principles:
+```php
+use Dranzd\Common\Utils\DateUtil;
 
-```
-┌─────────────────────────────────────┐
-│   Infrastructure Layer              │
-│   (Laravel/Laminas Adapters)        │
-├─────────────────────────────────────┤
-│   Application Layer                 │
-│   (Use Cases, Command Handlers)     │
-├─────────────────────────────────────┤
-│   Domain Layer                      │
-│   (Aggregates, Events, Value Objs)  │
-│   ← This Library                    │
-└─────────────────────────────────────┘
+// Format dates
+$formatted = DateUtil::format(new DateTime(), 'Y-m-d');
+
+// Parse dates
+$date = DateUtil::parse('2024-01-15', 'Y-m-d');
+
+// Date calculations
+$tomorrow = DateUtil::addDays(new DateTime(), 1);
+$lastWeek = DateUtil::subDays(new DateTime(), 7);
 ```
 
-The core domain logic remains framework-agnostic, with framework-specific implementations in outer layers.
+### MoneyUtil - Money Calculations
+
+```php
+use Dranzd\Common\Utils\MoneyUtil;
+
+// Format money
+$formatted = MoneyUtil::format(1234.56, 'USD');
+// Result: '$1,234.56'
+
+// Calculate totals
+$total = MoneyUtil::sum([100.50, 200.75, 50.25]);
+// Result: 351.50
+
+// Apply percentage
+$withTax = MoneyUtil::addPercentage(100.00, 15);
+// Result: 115.00
+```
+
+### ObjectUtil - Object Manipulation
+
+```php
+use Dranzd\Common\Utils\ObjectUtil;
+
+// Convert object to array
+$array = ObjectUtil::toArray($object);
+
+// Clone object deeply
+$clone = ObjectUtil::deepClone($object);
+
+// Get property value via reflection
+$value = ObjectUtil::getProperty($object, 'privateProperty');
+
+// Set property value via reflection
+ObjectUtil::setProperty($object, 'privateProperty', 'new value');
+```
+
+### SearchUtil - Search and Filtering
+
+```php
+use Dranzd\Common\Utils\SearchUtil;
+
+$data = [
+    ['name' => 'John Doe', 'age' => 30],
+    ['name' => 'Jane Smith', 'age' => 25],
+    ['name' => 'Bob Johnson', 'age' => 35]
+];
+
+// Search by criteria
+$results = SearchUtil::search($data, ['age' => 30]);
+// Returns: [['name' => 'John Doe', 'age' => 30]]
+
+// Filter by callback
+$adults = SearchUtil::filter($data, fn($item) => $item['age'] >= 30);
+// Returns: [['name' => 'John Doe', 'age' => 30], ['name' => 'Bob Johnson', 'age' => 35]]
+```
+
+## API Reference
+
+### ArrayUtil
+
+| Method | Description | Parameters |
+|--------|-------------|------------|
+| `keyToSnakeCase(array $array, bool $recursive = false)` | Convert array keys to snake_case | `$array` - Input array<br>`$recursive` - Convert nested arrays |
+| `keyToCamelCase(array $array, bool $recursive = false)` | Convert array keys to camelCase | `$array` - Input array<br>`$recursive` - Convert nested arrays |
+| `keyToKebabCase(array $array, bool $recursive = false)` | Convert array keys to kebab-case | `$array` - Input array<br>`$recursive` - Convert nested arrays |
+| `merge(array $a, array $b, bool $preserveNumericKeys = false)` | Merge two arrays | `$a` - First array<br>`$b` - Second array<br>`$preserveNumericKeys` - Preserve numeric keys |
+
+### StringUtil
+
+| Method | Description | Parameters |
+|--------|-------------|------------|
+| `toSnakeCase(string $string)` | Convert string to snake_case | `$string` - Input string |
+| `toCamelCase(string $string)` | Convert string to camelCase | `$string` - Input string |
+| `toKebabCase(string $string)` | Convert string to kebab-case | `$string` - Input string |
+
+### Idx
+
+| Method | Description | Parameters |
+|--------|-------------|------------|
+| `get(mixed $object, mixed $key, mixed $default = null, bool $useDefaultOnEmpty = false)` | Safely get value from array or object | `$object` - Array or object<br>`$key` - String, numeric, or array of keys<br>`$default` - Default value if not found<br>`$useDefaultOnEmpty` - Use default if value is empty |
+
+### DateUtil
+
+| Method | Description | Parameters |
+|--------|-------------|------------|
+| `format(DateTime $date, string $format)` | Format date | `$date` - DateTime object<br>`$format` - Format string |
+| `parse(string $date, string $format)` | Parse date string | `$date` - Date string<br>`$format` - Format string |
+| `addDays(DateTime $date, int $days)` | Add days to date | `$date` - DateTime object<br>`$days` - Number of days |
+| `subDays(DateTime $date, int $days)` | Subtract days from date | `$date` - DateTime object<br>`$days` - Number of days |
+
+### MoneyUtil
+
+| Method | Description | Parameters |
+|--------|-------------|------------|
+| `format(float $amount, string $currency)` | Format money | `$amount` - Amount<br>`$currency` - Currency code |
+| `sum(array $amounts)` | Sum array of amounts | `$amounts` - Array of numbers |
+| `addPercentage(float $amount, float $percentage)` | Add percentage to amount | `$amount` - Base amount<br>`$percentage` - Percentage to add |
+
+### ObjectUtil
+
+| Method | Description | Parameters |
+|--------|-------------|------------|
+| `toArray(object $object)` | Convert object to array | `$object` - Object to convert |
+| `deepClone(object $object)` | Deep clone object | `$object` - Object to clone |
+| `getProperty(object $object, string $property)` | Get property via reflection | `$object` - Object<br>`$property` - Property name |
+| `setProperty(object $object, string $property, mixed $value)` | Set property via reflection | `$object` - Object<br>`$property` - Property name<br>`$value` - New value |
+
+### SearchUtil
+
+| Method | Description | Parameters |
+|--------|-------------|------------|
+| `search(array $data, array $criteria)` | Search by criteria | `$data` - Array to search<br>`$criteria` - Search criteria |
+| `filter(array $data, callable $callback)` | Filter by callback | `$data` - Array to filter<br>`$callback` - Filter function |
 
 ## Development
 
@@ -189,6 +257,8 @@ composer test
 
 ### Static Analysis
 
+Run PHPStan at level 8:
+
 ```bash
 composer phpstan
 ```
@@ -196,7 +266,7 @@ composer phpstan
 ### Code Style
 
 ```bash
-# Check code style
+# Check code style (PSR-12)
 composer cs-check
 
 # Fix code style automatically
@@ -210,7 +280,10 @@ composer cs-fix
 docker-compose build
 
 # Run tests in container
-docker-compose run --rm php ./vendor/bin/phpunit
+docker-compose run --rm php composer test
+
+# Run PHPStan in container
+docker-compose run --rm php composer phpstan
 
 # Interactive shell
 docker-compose run --rm php bash
@@ -218,124 +291,141 @@ docker-compose run --rm php bash
 
 ## Design Principles
 
-- **Domain-Driven Design**: Aggregates, entities, value objects, and domain events
-- **Event Sourcing**: State changes captured as immutable events
-- **CQRS Ready**: Separate command and query models
-- **Framework Agnostic**: Core domain logic independent of infrastructure
-- **Testability**: Easy to unit test without framework dependencies
-- **Named Constructors**: Expressive event creation enforced by design
-- **Value Object Validation**: Type safety through domain objects
-- **Event Versioning**: Schema evolution without data migration
+- **Framework Agnostic**: Zero dependencies on frameworks (Laravel, Symfony, etc.)
+- **Pure PHP**: Uses only native PHP functions and standard extensions
+- **Type Safety**: Full PHP 8.3 type hints for better IDE support
+- **Immutability**: Utility functions don't modify input data
+- **Predictability**: Pure functions with consistent behavior
+- **Testability**: Easy to unit test without mocking
+- **Performance**: Optimized for common use cases
+- **PSR-12 Compliant**: Follows PHP coding standards
+
+## Use Cases
+
+### API Response Transformation
+
+```php
+// Convert API response keys from camelCase to snake_case
+$apiResponse = [
+    'userId' => 123,
+    'firstName' => 'John',
+    'emailAddress' => 'john@example.com'
+];
+
+$dbFormat = ArrayUtil::keyToSnakeCase($apiResponse);
+// Save to database with snake_case columns
+```
+
+### Safe Configuration Access
+
+```php
+// Safely access nested configuration
+$config = [
+    'database' => [
+        'host' => 'localhost',
+        'port' => 3306
+    ]
+];
+
+$host = Idx::get($config, ['database', 'host'], '127.0.0.1');
+$timeout = Idx::get($config, ['database', 'timeout'], 30);
+```
+
+### Data Normalization
+
+```php
+// Normalize user input
+$userInput = [
+    'FirstName' => 'John',
+    'LAST_NAME' => 'Doe',
+    'Email-Address' => 'john@example.com'
+];
+
+$normalized = ArrayUtil::keyToSnakeCase($userInput);
+// All keys now in consistent snake_case format
+```
+
+## Why Framework-Agnostic?
+
+This library is intentionally framework-agnostic to:
+
+1. **Universal Compatibility**: Use in any PHP project (Laravel, Symfony, Laminas, vanilla PHP)
+2. **No Vendor Lock-in**: Not tied to any specific framework's lifecycle
+3. **Minimal Dependencies**: Only requires PHP 8.3+ and ext-json
+4. **Long-term Stability**: Not affected by framework version changes
+5. **Composability**: Can be used as a foundation for other libraries
+6. **Performance**: No framework overhead
 
 ## Documentation
 
-- **[Event Design Patterns](docs/guides/event-patterns.md)** - Comprehensive guide to event patterns
-- **[Event Versioning Example](docs/examples/event-versioning-example.md)** - Complete versioning guide
-- **[Domain Event Design Review](docs/reviews/domain-event-design-review.md)** - Design analysis
-- **[Namespace Migration Notes](docs/migration/namespace-migration.md)** - Migration documentation
+- **[Utilities Strip-Down Plan](docs/migration/utilities-strip-down-plan.md)** - Migration from event-sourcing library
+- **[Library Separation Plan](docs/migration/library-separation-plan.md)** - Overall separation strategy
 
-## Key Features Explained
+## Roadmap
 
-### Named Constructor Pattern
+### Planned Features
 
-Events use static factory methods for creation, making code more expressive:
+- [ ] Additional string utilities (truncate, slug, sanitize)
+- [ ] Enhanced date utilities (timezone handling, relative dates)
+- [ ] Collection utilities (map, filter, reduce with type safety)
+- [ ] Validation utilities (email, URL, UUID)
+- [ ] File path utilities (normalize, join, resolve)
 
-```php
-// ✅ Expressive - reads like domain language
-$event = OrderPlaced::withAmount($orderId, $customerId, $totalAmount);
+### Future Considerations
 
-// ❌ Not allowed - constructor is private
-$event = new OrderPlaced($orderId, $customerId, $totalAmount);
-```
-
-### Event Versioning
-
-Built-in support for event schema evolution:
-
-```php
-final class OrderPlaced extends AbstractAggregateEvent implements VersionedEvent
-{
-    use VersionedEventTrait;
-    
-    const CURRENT_VERSION = 2;  // Increment when schema changes
-    
-    // Upcasters handle old event versions automatically
-}
-```
-
-### Metadata Tracking
-
-Events that extend `AbstractAggregateEvent` automatically include causation, correlation, and actor tracking:
-
-```php
-$event = OrderPlaced::withAmount($orderId, $customerId, $amount);
-
-// AbstractAggregateEvent includes these traits:
-// - CausationCapableTrait
-// - CorrelationCapableTrait  
-// - ActorCapableTrait
-
-// Add causation (this event was caused by a command)
-$event = $event->withCausationId($command->getMessageUuid());
-$event = $event->withCausationName('PlaceOrderCommand');
-
-// Add correlation (for distributed tracing)
-$event = $event->withCorrelationId($traceId);
-
-// Add actor information
-$event = $event->withActorId($userId);
-$event = $event->withActorName('John Doe');
-
-// Read metadata
-$causationId = $event->getCausationId();
-$correlationId = $event->getCorrelationId();
-$actorId = $event->getActorId();
-$occurredAt = $event->occurredAt();
-$eventId = $event->eventId();
-
-// Access metadata directly
-$value = $event->getMetadataValue('custom_key');
-$hasKey = $event->hasMetadata('custom_key');
-```
-
-For custom events, you can selectively use traits:
-
-```php
-use Dranzd\Common\EventSourcing\Domain\Event\AbstractEvent;
-use Dranzd\Common\EventSourcing\Domain\Message\CausationCapable;
-use Dranzd\Common\EventSourcing\Domain\Message\CausationCapableTrait;
-
-class CustomEvent extends AbstractEvent implements CausationCapable
-{
-    use CausationCapableTrait;
-    
-    const MESSAGE_NAME = 'custom.event';
-    
-    // Now has withCausationId(), getCausationId(), etc.
-}
-```
+- [ ] PHP 8.4 compatibility
+- [ ] Performance benchmarks
+- [ ] Extended documentation with more examples
+- [ ] Video tutorials
 
 ## License
 
-MIT
+MIT License - see [LICENSE](LICENSE) file for details
 
 ## Contributing
 
 Contributions are welcome! Please ensure:
-- All tests pass
-- Code follows PSR-12 standards
-- PHPStan analysis passes at level 8 or higher
-- New features include tests and documentation
+
+1. **Tests Pass**: Run `composer test` before submitting
+2. **Code Style**: Follow PSR-12 standards (`composer cs-check`)
+3. **Static Analysis**: Pass PHPStan level 8 (`composer phpstan`)
+4. **Documentation**: Update README and add examples
+5. **Type Safety**: Use strict types and full type hints
+6. **No Dependencies**: Keep the library framework-agnostic
+
+### Contribution Guidelines
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-utility`)
+3. Write tests for your changes
+4. Ensure all tests pass and code style is correct
+5. Commit your changes (`git commit -m 'Add amazing utility'`)
+6. Push to the branch (`git push origin feature/amazing-utility`)
+7. Open a Pull Request
+
+## Support
+
+- **Issues**: [GitHub Issues](https://github.com/dranzd/common-utils/issues)
+- **Discussions**: [GitHub Discussions](https://github.com/dranzd/common-utils/discussions)
+- **Email**: dranzd@gmail.com
 
 ## Changelog
 
-### Recent Updates
+### v1.0.0 (2025-11-02)
 
-- ✅ **Comprehensive Test Suite** - 123 tests with 288 assertions covering all core functionality
-- ✅ **Event Versioning System** - Complete versioning support with upcasters and `VersionedEventTrait`
-- ✅ **Trait-Based Capabilities** - Flexible metadata support via `CausationCapableTrait`, `CorrelationCapableTrait`, `ActorCapableTrait`
-- ✅ **Aggregate Root Pattern** - `AggregateRootTrait` with automatic event application via `applyOn{EventName}` methods
-- ✅ **Type Safety** - Full `static` return types for fluent interfaces and method chaining
-- ✅ **Metadata Injectors** - Command-to-Event metadata transfer utilities
-- ✅ **Namespace Migration** - Migrated to `Dranzd\Common\EventSourcing`
-- ✅ **Documentation** - Comprehensive guides and examples
+- ✅ **Initial Release** - Separated from `dranzd/common-event-sourcing`
+- ✅ **PHP 8.3 Support** - Updated to require PHP 8.3+
+- ✅ **Framework-Agnostic** - Removed all framework dependencies
+- ✅ **ArrayUtil** - Array key case conversion utilities
+- ✅ **StringUtil** - String case conversion utilities
+- ✅ **Idx** - Safe property access utility
+- ✅ **DateUtil** - Date manipulation utilities
+- ✅ **MoneyUtil** - Money calculation utilities
+- ✅ **ObjectUtil** - Object manipulation utilities
+- ✅ **SearchUtil** - Search and filtering utilities
+- ✅ **Comprehensive Documentation** - Complete API reference and examples
+- ✅ **Latest Dependencies** - PHPUnit 11, PHPStan 1.12, PHPCS 3.10
+
+---
+
+**Made with ❤️ by Dranzd**
