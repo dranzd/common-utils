@@ -275,15 +275,54 @@ composer cs-fix
 
 ### Using Docker
 
+This project includes a `utils` script (similar to Laravel Sail) for easy Docker management:
+
+```bash
+# Start containers
+./utils up
+
+# Stop containers
+./utils down
+
+# Restart containers
+./utils restart
+
+# Open shell
+./utils shell
+
+# Run tests
+./utils test
+
+# Run PHPStan
+./utils phpstan
+
+# Check code style
+./utils cs-check
+
+# Fix code style
+./utils cs-fix
+
+# Run all quality checks
+./utils quality
+
+# Composer commands
+./utils composer install
+./utils install          # shortcut
+./utils composer update
+./utils dump-autoload
+
+# View all available commands
+./utils
+```
+
+**Traditional Docker Compose:**
+
 ```bash
 # Build the container
 docker-compose build
 
 # Run tests in container
 docker-compose run --rm php composer test
-
-# Run PHPStan in container
-docker-compose run --rm php composer phpstan
 
 # Interactive shell
 docker-compose run --rm php bash
