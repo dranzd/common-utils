@@ -14,7 +14,7 @@ A collection of framework-agnostic utility functions for PHP 8.3+ applications. 
 - **Framework Agnostic**: Zero framework dependencies - pure PHP only
 - **PHP 8.3+**: Modern PHP with full type safety
 - **Lightweight**: Minimal dependencies (only ext-json)
-- **Well Tested**: Comprehensive test coverage
+- **Type Safe**: Strict types and comprehensive PHPDoc annotations
 
 ## Requirements
 
@@ -397,6 +397,15 @@ This library is intentionally framework-agnostic to:
 
 ## Documentation
 
+### API Reference
+
+- **[Complete API Documentation](docs/api/README.md)** - Comprehensive API reference for all utilities
+- **[ArrayUtil API](docs/api/array-util.md)** - Array manipulation utilities
+- **[StringUtil API](docs/api/string-util.md)** - String conversion utilities
+- **[Idx API](docs/api/idx.md)** - Safe property access
+
+### Migration Guides
+
 - **[Utilities Strip-Down Plan](docs/migration/utilities-strip-down-plan.md)** - Migration from event-sourcing library
 - **[Library Separation Plan](docs/migration/library-separation-plan.md)** - Overall separation strategy
 
@@ -450,20 +459,7 @@ Contributions are welcome! Please ensure:
 
 ## Changelog
 
-### v1.0.0 (2025-11-02)
-
-- ✅ **Initial Release** - Separated from `dranzd/common-event-sourcing`
-- ✅ **PHP 8.3 Support** - Updated to require PHP 8.3+
-- ✅ **Framework-Agnostic** - Removed all framework dependencies
-- ✅ **ArrayUtil** - Array key case conversion utilities
-- ✅ **StringUtil** - String case conversion utilities
-- ✅ **Idx** - Safe property access utility
-- ✅ **DateUtil** - Date manipulation utilities
-- ✅ **MoneyUtil** - Money calculation utilities
-- ✅ **ObjectUtil** - Object manipulation utilities
-- ✅ **SearchUtil** - Search and filtering utilities
-- ✅ **Comprehensive Documentation** - Complete API reference and examples
-- ✅ **Latest Dependencies** - PHPUnit 11, PHPStan 1.12, PHPCS 3.10
+See [CHANGELOG.md](CHANGELOG.md) for detailed version history.
 
 ---
 
