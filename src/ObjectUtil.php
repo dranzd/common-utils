@@ -76,7 +76,12 @@ final class ObjectUtil
      * @param  mixed                $value
      * @param  ReflectionClass|null $reflection
      */
-    public function setPropertyValue(object $object, string $property, mixed $value, ?ReflectionClass $reflection = null): void
+    public function setPropertyValue(
+        object $object,
+        string $property,
+        mixed $value,
+        ?ReflectionClass $reflection = null
+    ): void
     {
         if (null === $reflection) {
             $reflection = new \ReflectionClass(\get_class($object));

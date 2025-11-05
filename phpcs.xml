@@ -12,6 +12,14 @@
     <!-- Exclude vendor directory -->
     <exclude-pattern>*/vendor/*</exclude-pattern>
 
+    <!-- Set line length limit to 120 characters -->
+    <rule ref="Generic.Files.LineLength">
+        <properties>
+            <property name="lineLimit" value="120"/>
+            <property name="absoluteLineLimit" value="120"/>
+        </properties>
+    </rule>
+
     <!-- Allow inline variable type hints to remain on a single line -->
     <rule ref="Squiz.Commenting.InlineComment">
         <exclude name="Squiz.Commenting.InlineComment.DocBlock"/>
