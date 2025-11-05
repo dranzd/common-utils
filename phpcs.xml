@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+<ruleset name="Common Utils Coding Standard">
+    <description>Custom coding standard for dranzd/common-utils</description>
+
+    <!-- Base standard -->
+    <rule ref="PSR12"/>
+
+    <!-- Paths to check -->
+    <file>src</file>
+    <file>tests</file>
+
+    <!-- Exclude vendor directory -->
+    <exclude-pattern>*/vendor/*</exclude-pattern>
+
+    <!-- Allow inline variable type hints to remain on a single line -->
+    <rule ref="Squiz.Commenting.InlineComment">
+        <exclude name="Squiz.Commenting.InlineComment.DocBlock"/>
+    </rule>
+
+    <!-- Configure comment spacing to allow inline @var annotations -->
+    <rule ref="Squiz.Commenting.BlockComment">
+        <exclude name="Squiz.Commenting.BlockComment.SingleLine"/>
+    </rule>
+
+    <!-- Prevent reformatting of single-line docblocks used for variable type hints -->
+    <rule ref="Generic.Commenting.DocComment">
+        <exclude name="Generic.Commenting.DocComment.ContentAfterOpen"/>
+        <exclude name="Generic.Commenting.DocComment.ContentBeforeClose"/>
+        <exclude name="Generic.Commenting.DocComment.SpacingBeforeShort"/>
+    </rule>
+</ruleset>

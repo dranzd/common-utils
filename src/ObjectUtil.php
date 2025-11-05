@@ -82,9 +82,7 @@ final class ObjectUtil
             $reflection = new \ReflectionClass(\get_class($object));
         }
 
-        /**
- * @var \ReflectionClass $reflection
-*/
+        /** @var \ReflectionClass $reflection */
 
         $reflectionProperty = null;
         if ($reflection->hasProperty($property)) {
