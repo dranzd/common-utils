@@ -81,8 +81,7 @@ final class ObjectUtil
         string $property,
         mixed $value,
         ?ReflectionClass $reflection = null
-    ): void
-    {
+    ): void {
         if (null === $reflection) {
             $reflection = new \ReflectionClass(\get_class($object));
         }

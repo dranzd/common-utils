@@ -19,21 +19,4 @@
             <property name="absoluteLineLimit" value="120"/>
         </properties>
     </rule>
-
-    <!-- Allow inline variable type hints to remain on a single line -->
-    <rule ref="Squiz.Commenting.InlineComment">
-        <exclude name="Squiz.Commenting.InlineComment.DocBlock"/>
-    </rule>
-
-    <!-- Configure comment spacing to allow inline @var annotations -->
-    <rule ref="Squiz.Commenting.BlockComment">
-        <exclude name="Squiz.Commenting.BlockComment.SingleLine"/>
-    </rule>
-
-    <!-- Prevent reformatting of single-line docblocks used for variable type hints -->
-    <rule ref="Generic.Commenting.DocComment">
-        <exclude name="Generic.Commenting.DocComment.ContentAfterOpen"/>
-        <exclude name="Generic.Commenting.DocComment.ContentBeforeClose"/>
-        <exclude name="Generic.Commenting.DocComment.SpacingBeforeShort"/>
-    </rule>
 </ruleset>
