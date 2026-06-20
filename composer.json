@@ -47,6 +47,11 @@
         "cs-check": "phpcs",
         "cs-fix": "phpcbf"
     },
+    "extra": {
+        "branch-alias": {
+            "dev-master": "1.0.x-dev"
+        }
+    },
     "config": {
         "sort-packages": true,
         "optimize-autoloader": true,
