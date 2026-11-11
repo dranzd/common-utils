@@ -29,7 +29,7 @@ jobs:
 
       - run: composer validate --strict
 
-      - uses: ramsey/composer-install@v3
+      - uses: ramsey/composer-install@v4
 
       - run: composer cs-check
 
@@ -56,7 +56,7 @@ jobs:
           extensions: mbstring
           coverage: pcov
 
-      - uses: ramsey/composer-install@v3
+      - uses: ramsey/composer-install@v4
         with:
           dependency-versions: ${{ matrix.dependencies }}
 
