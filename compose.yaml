@@ -1,0 +1,12 @@
+services:
+  php:
+    build: .
+    user: "${UID:-1000}:${GID:-1000}"
+    environment:
+      COMPOSER_HOME: /tmp/composer
+    volumes:
+      - .:/app
+      - composer-cache:/tmp/composer
+
+volumes:
+  composer-cache:
