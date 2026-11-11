@@ -7,8 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-First public release, to be tagged `1.1.0`. The earlier `1.0.0` tag was a private pre-release; the
-notes below describe what changed compared with it.
+## [1.1.0] - 2026-11-11
+
+First public release. The earlier `1.0.0` tag was a private pre-release; the notes below describe
+what changed compared with it.
 
 ### Added
 
@@ -116,4 +118,5 @@ that caught those types must catch `InvalidArgumentException` instead.
   still pass one keep working, because PHP ignores the extra argument; calls that pass it by name
   (`reflection:`) do not.
 
-[Unreleased]: https://github.com/dranzd/common-utils/commits/master
+[Unreleased]: https://github.com/dranzd/common-utils/compare/v1.1.0...master
+[1.1.0]: https://github.com/dranzd/common-utils/releases/tag/v1.1.0
