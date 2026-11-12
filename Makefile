@@ -1,3 +1,6 @@
+export HOST_UID := $(shell id -u)
+export HOST_GID := $(shell id -g)
+
 DOCKER = docker compose run --rm php
 
 .PHONY: help install test coverage phpstan cs cs-fix check shell
